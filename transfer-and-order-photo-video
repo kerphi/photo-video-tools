@@ -1,0 +1,33 @@
+#!/bin/bash
+#
+# Script chargé de :
+# - retourner horizontallement ou verticalement les photos
+# - renommer photos & videos par date heure et minute de prise de vue
+# - classer photos & videos dans une structure de répertoires datés
+# - transférer photos & videos sur zekra au bon endroit
+# - effacer photos & videos un par un une fois transférées sur zekra
+#
+
+sudo apt-get install -y jhead libimage-exiftool-perl rsync
+
+set -e
+
+ORIG=/home/kerphi/freebox/Photos/GT-I9100/Camera
+ORIG=/home/kerphi/freebox/Photos/Nexus\ 5/Camera
+ORIG=/media/kerphi/9016-4EF8/DCIM/101CANON
+
+cd "$ORIG"
+
+# nettoyage des fichiers appercus des vidéos
+rm -f *.THM
+# retourne la photo dans le bon sens (vertical ou horizontal) 
+# en fonction de la métadonnées exif renseignée par l'appareil photo
+jhead -autorot -c *
+# range les photos par répertoires datés
+exiftool '-FileName<DateTimeOriginal' -d %Y/%Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e *
+# range les videos par répertoires datés
+exiftool '-FileName<MediaCreateDate'  -d %Y/%Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e *
+
+# transfert optimisé des répertoires datés sur zekra
+rsync -ravh --remove-source-files "$ORIG/" zekra:/mnt/zekra/photos/
+
