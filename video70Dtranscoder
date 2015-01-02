@@ -57,6 +57,6 @@ for SRC in $(find . -iname "*.avi" ; find . -iname "*.mov" ; find . -iname "*.or
   echo "Renomme la version transcodée vers le fichier ${SRC_NICE_NAME}"
   mv $DST $SRC_NICE_NAME
 
-  echo "Le fichier ${SRCMV} peut être supprimé si souhaité (après vérification que ${SRCMV} fonctionne)"
+  echo "Le fichier ${SRCMV} peut être supprimé si souhaité (après vérification que ${SRC_NICE_NAME} fonctionne)"
 
 done
