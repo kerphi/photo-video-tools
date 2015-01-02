@@ -30,6 +30,6 @@ exiftool '-FileName<MediaCreateDate'  -d %Y/%Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e *
 
 # transfert optimisé des répertoires datés sur zekra
 ORIG=$(pwd)
-rsync -ravh --remove-source-files "$ORIG/2014/" zekra:/mnt/zekra/photos/2014/
-rsync -ravh --remove-source-files "$ORIG/2015/" zekra:/mnt/zekra/photos/2015/
+rsync -ravhp --chmod=777 --remove-source-files "$ORIG/2014/" zekra:/mnt/zekra/photos/2014/
+rsync -ravhp --chmod=777 --remove-source-files "$ORIG/2015/" zekra:/mnt/zekra/photos/2015/
 
