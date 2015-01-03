@@ -39,7 +39,7 @@ for SRC in $(find . -iname "*.avi" ; find . -iname "*.mov" ; find . -iname "*.or
 
   echo "Transcoding de la vidéo ${SRC} dans un fichier temporaire ${SRC_NICE_NAME}.x264"
   DST="${SRC_NICE_NAME}.x264"
-  cvlc ${SRC} ":sout=#transcode{deinterlace, venc=x264{profile=baseline,level=13,crf=24}, acodec=mpga, ab=128, channels=2}:std{access=file, mux=mp4, dst=${DST}}" vlc://quit 
+  cvlc ${SRC} ":sout=#transcode{deinterlace, venc=x264{profile=baseline,level=13,crf=24}, acodec=vorbis, ab=128, channels=2}:std{access=file, mux=mkv, dst=${DST}}" vlc://quit 
   
   echo "Copie les métadonnées EXIF de la vidéo source vers destination"
   exiftool -TagsFromFile ${SRC} ${DST} -overwrite_original
