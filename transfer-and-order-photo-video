@@ -16,20 +16,19 @@ ORIG=/home/kerphi/freebox/Photos/GT-I9100/Camera
 ORIG=/home/kerphi/freebox/Photos/Nexus\ 5/Camera
 ORIG=/media/kerphi/9016-4EF8/DCIM/101CANON
 
-cd "$ORIG"
-
 # nettoyage des fichiers appercus des vidéos
 rm -f *.THM
 # retourne la photo dans le bon sens (vertical ou horizontal) 
 # en fonction de la métadonnées exif renseignée par l'appareil photo
 jhead -autorot -c *
 # range les photos par répertoires datés
-exiftool '-FileName<DateTimeOriginal' -d %Y/%Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e *
+exiftool '-FileName<DateTimeOriginal' -d %Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e *
 # range les videos par répertoires datés
-exiftool '-FileName<MediaCreateDate'  -d %Y/%Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e *
+exiftool '-FileName<MediaCreateDate'  -d %Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e *
 
 # transfert optimisé des répertoires datés sur zekra
-ORIG=$(pwd)
-rsync -ravhp --chmod=777 --remove-source-files "$ORIG/2014/" zekra:/mnt/zekra/photos/2014/
-rsync -ravhp --chmod=777 --remove-source-files "$ORIG/2015/" zekra:/mnt/zekra/photos/2015/
-
+for PHOTODIR in $(find . -maxdepth 1 -type d -path "./20*_*")
+do
+  ANNEE=$(echo $PHOTODIR | sed 's#.*\(20[0-9]\{2\}\).*#\1#g')
+  rsync -ravhp --chmod=777 --remove-source-files "$PHOTODIR" zekra:/mnt/zekra/photos_test/$ANNEE/
+done
