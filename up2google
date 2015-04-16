@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+# Script chargé d'uploader récursivement
+# les images JPG dans un album google.
+#
+# sudo apt-get install imagemagick googlecl
+#
+
+ALBUM="Test googlecl"
+
+set -e
+
+if [ "`dpkg --get-selections | grep imagemagick | grep install`" = "" ]; then
+  echo "Erreur : le programme convert n'est pas présent"
+  echo "         sudo apt-get install imagemagick"
+  exit
+fi
+
+if [ "`dpkg --get-selections | grep googlecl | grep install`" = "" ]; then
+  echo "Erreur : le programme google n'est pas présent"
+  echo "         sudo apt-get install googlecl"
+  exit
+fi
+
+for SRC in $(find . -iname "*.JPG"); do
+
+  DST_RESIZED=/tmp/$(echo $SRC | sed 's#\.JPG$##g').resized.JPG
+  DST_RESIZED=$(realpath $DST_RESIZED)
+
+  echo "--> START - Processing $SRC"
+  convert -resize 1024 -quality 90 "$SRC" "$DST_RESIZED"
+  google picasa post --title "$ALBUM" --src "$DST_RESIZED"
+  rm -f $DST_RESIZED
+  echo "--> END - Processing $SRC"
+
+done
