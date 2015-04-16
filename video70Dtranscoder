@@ -15,6 +15,12 @@ if [ "`dpkg --get-selections | grep libimage-exiftool-perl | grep install`" = ""
   echo "         sudo apt-get install libimage-exiftool-perl"
   exit
 fi
+if [ "`dpkg --get-selections | grep libav-tools | grep install`" = "" ]; then
+  echo "Erreur : le programme avprobe n'est présent, installez le"
+  echo "         sudo apt-get install libav-tools"
+  exit
+fi
+
 
 # cvlc ./MVI_0612.MOV ":sout=#transcode{deinterlace, venc=x264{profile=baseline,level=13,crf=24}, acodec=mpga, ab=128, channels=2}:std{access=file, mux=mp4, dst=testvl_MVI_0612.mp4}" vlc://quit 
 
@@ -22,11 +28,14 @@ for SRC in $(find . -iname "*.avi" ; find . -iname "*.mov" ; find . -iname "*.or
 
   SRC_NICE_NAME=$(echo $SRC | sed 's#\.orig$##g')
   
-  # passe le transcoding du .orig su la version non .orig 
-  # est déjà en MPEG4
+# todo utiliser avprobe pour mieux détecter le codec de la video ?
+# http://askubuntu.com/questions/303454/get-information-about-a-video-from-command-line-tool
+
+  # passe le transcoding du .orig si la version non .orig est déjà en MPEG4
   if [ "${SRC}" != "${SRC_NICE_NAME}" ]; then
-    if [ "$(file $SRC_NICE_NAME | grep 'ISO Media, MPEG v4 system, version 1')" != "" ]; then
-      echo "Le fichier $SRC a été ignoré car il a déjà ${SRC_NICE_NAME} en 'MPEG v4'"
+    if [ "$(avprobe $SRC_NICE_NAME 2>&1 | grep libx264)" != "" ]; then
+    #if [ "$(file $SRC_NICE_NAME | grep 'ISO Media, MPEG v4 system, version 1')" != "" ]; then
+      echo "Le fichier $SRC a été ignoré car il y a déjà ${SRC_NICE_NAME} encodé avec libx264"
       continue
     fi
   fi
@@ -38,10 +47,17 @@ for SRC in $(find . -iname "*.avi" ; find . -iname "*.mov" ; find . -iname "*.or
   fi
 
   echo "Transcoding de la vidéo ${SRC} dans un fichier temporaire ${SRC_NICE_NAME}.x264"
-  DST="${SRC_NICE_NAME}.x264"
-  cvlc ${SRC} ":sout=#transcode{deinterlace, venc=x264{profile=baseline,level=13,crf=24}, acodec=mp3, ab=128, channels=2}:std{access=file, mux=ts, dst=${DST}}" vlc://quit 
-  
+  DST="${SRC_NICE_NAME}.x264.mkv"
+  #cvlc ${SRC} ":sout=#transcode{deinterlace, venc=x264{profile=baseline,level=13,crf=24}, acodec=mp3, ab=128, channels=2}:std{access=file, mux=ts, dst=${DST}}" vlc://quit 
+  ffmpeg -i ${SRC} -threads 0 -map 0:0 -map 0:1 -sn -vcodec libx264 -preset slow -crf 22 -acodec libvorbis -ac 2 -aq 4 $DST
+   
   echo "Copie les métadonnées EXIF de la vidéo source vers destination"
+
+#TODO
+#Error: Writing of MKV files is not yet supported - MVI_0620.MOV.mkv
+#    0 image files updated
+#    1 files weren't updated due to errors
+
   exiftool -TagsFromFile ${SRC} ${DST} -overwrite_original
   
   # si on ne traitait pas un fichier se terminant par .orig

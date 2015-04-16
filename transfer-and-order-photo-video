@@ -20,15 +20,15 @@ ORIG=/media/kerphi/9016-4EF8/DCIM/101CANON
 rm -f *.THM
 # retourne la photo dans le bon sens (vertical ou horizontal) 
 # en fonction de la métadonnées exif renseignée par l'appareil photo
-jhead -autorot -c *
+jhead -autorot -c *.JPG
 # range les photos par répertoires datés
-exiftool '-FileName<DateTimeOriginal' -d %Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e *
+exiftool '-FileName<DateTimeOriginal' -d %Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e ./*.JPG
 # range les videos par répertoires datés
-exiftool '-FileName<MediaCreateDate'  -d %Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e *
+exiftool '-FileName<MediaCreateDate'  -d %Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e ./*.MOV
 
 # transfert optimisé des répertoires datés sur zekra
 for PHOTODIR in $(find . -maxdepth 1 -type d -path "./20*_*")
 do
   ANNEE=$(echo $PHOTODIR | sed 's#.*\(20[0-9]\{2\}\).*#\1#g')
-  rsync -ravhp --chmod=777 --remove-source-files "$PHOTODIR" zekra:/mnt/zekra/photos_test/$ANNEE/
+  rsync -ravhp --chmod=777 --remove-source-files "$PHOTODIR" zekra:/mnt/zekra/photos/$ANNEE/
 done
