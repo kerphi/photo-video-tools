@@ -24,7 +24,7 @@ fi
 
 # cvlc ./MVI_0612.MOV ":sout=#transcode{deinterlace, venc=x264{profile=baseline,level=13,crf=24}, acodec=mpga, ab=128, channels=2}:std{access=file, mux=mp4, dst=testvl_MVI_0612.mp4}" vlc://quit 
 
-for SRC in $(find . -iname "*.avi" ; find . -iname "*.mov" ; find . -iname "*.orig"); do
+for SRC in $(find . -iname "*.avi" ; find . -iname "*.mov" ; find . -iname "*.mp4" ; find . -iname "*.orig"); do
 
   SRC_NICE_NAME=$(echo $SRC | sed 's#\.orig$##g')
   
@@ -41,8 +41,8 @@ for SRC in $(find . -iname "*.avi" ; find . -iname "*.mov" ; find . -iname "*.or
   fi
 
   # passe le transcoding du fichier non .orig si c'est déjà du MPEG4
-  if [ "$(file $SRC | grep 'ISO Media, MPEG v4 system, version 1')" != "" ]; then
-    echo "Le fichier $SRC a été ignoré car son codec est déjà 'MPEG v4'"
+  if [ "$(avprobe $SRC 2>&1 | grep libx264)" != "" ]; then
+    echo "Le fichier $SRC a été ignoré car son codec est déjà libx264"
     continue
   fi
 
