@@ -6,7 +6,7 @@
 # sudo apt-get install imagemagick googlecl
 #
 
-ALBUM="Test googlecl"
+ALBUM="Visite Saint Amarin - 16 mai 2015"
 
 set -e
 
@@ -21,6 +21,8 @@ if [ "`dpkg --get-selections | grep googlecl | grep install`" = "" ]; then
   echo "         sudo apt-get install googlecl"
   exit
 fi
+
+google picasa create --title "$ALBUM"
 
 for SRC in $(find . -iname "*.JPG"); do
 
