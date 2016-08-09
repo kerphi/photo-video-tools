@@ -23,6 +23,7 @@ rm -f *.THM
 jhead -autorot -c *.JPG
 # range les photos par répertoires datés
 exiftool '-FileName<DateTimeOriginal' -d %Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e ./*.JPG
+#exiftool '-FileName<GPSDateTime' -d %Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e ./*.jpg
 # range les videos par répertoires datés
 exiftool '-FileName<MediaCreateDate'  -d %Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e ./*.MOV
 
