@@ -1,0 +1,59 @@
+#!/bin/bash
+#
+# Ce script permet de convertir recursivement sur les vidéo leurs pistes audio
+# qui sont au format vorbis vers AAC car le serveur DLNA de la livebox ne supporte
+# pas vorbis.
+# Remarque : seules les pistes audio sont converties, les pistes vidées elles sont juste
+# recopiées sans réencodage.
+# On se retrouve pour chaque fichier vidéo traités avec deux fichiers :
+#   - 20160916-18h55_MVI_4630.aac.MOV
+#   - 20160916-18h55_MVI_4630.MOV.with-vorbis
+# A terme le .with-vorbis pourra être supprimé car la version aac la remplace.
+#
+
+if [ "`dpkg --get-selections | grep vlc-nox | grep install`" = "" ]; then
+  echo "Erreur : le programme vlc n'est présent"
+  echo "         sudo apt-get install vlc-nox"
+  exit
+fi
+if [ "`dpkg --get-selections | grep libimage-exiftool-perl | grep install`" = "" ]; then
+  echo "Erreur : le programme exiftool n'est présent"
+  echo "         sudo apt-get install libimage-exiftool-perl"
+  exit
+fi
+if [ "`dpkg --get-selections | grep libav-tools | grep install`" = "" ]; then
+  echo "Erreur : le programme avprobe n'est présent, installez le"
+  echo "         sudo apt-get install libav-tools"
+  exit
+fi
+
+
+# cvlc ./MVI_0612.MOV ":sout=#transcode{deinterlace, venc=x264{profile=baseline,level=13,crf=24}, acodec=mpga, ab=128, channels=2}:std{access=file, mux=mp4, dst=testvl_MVI_0612.mp4}" vlc://quit 
+
+for SRC in $(find . -iname "*.avi" ; find . -iname "*.mov" ; find . -iname "*.mp4"); do
+
+  # pas de transcodage si vorbis n'est pas déjà utilisé pour l'audio
+  if [ "$(avprobe $SRC 2>&1 | grep ENCODER | grep vorbis)" == "" ]; then
+    echo "Le fichier $SRC a été ignoré car son codec audio n'est pas vorbis"
+    continue
+  fi
+
+  DST_EXT=${SRC##*.}
+  DST_BASENAME="${SRC%.*}"
+  DST="${DST_BASENAME}.aac.${DST_EXT}"
+  echo "Transcoding de la vidéo ${SRC} dans un fichier temporaire ${DST}"
+
+  #ffmpeg -i ${SRC} -threads 0 -map 0:0 -map 0:1 -sn -vcodec libx264 -preset slow -crf 22 -acodec aac -ac 2 -aq 4 $DST
+  ffmpeg -i ${SRC} -vcodec copy -acodec aac $DST
+  
+
+  echo "Copie les métadonnées EXIF de la vidéo source vers destination"
+
+  exiftool -TagsFromFile ${SRC} ${DST} -overwrite_original  
+
+  # on garde dans un coin la version vorbis au cas ou
+  mv $SRC "$SRC.with-vorbis"
+
+  echo "Le fichier ${DST} est normalement utilisable par le lecteur DLNA"
+
+done
