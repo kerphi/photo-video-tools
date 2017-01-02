@@ -8,8 +8,6 @@
 
 sudo apt-get install -y jhead libimage-exiftool-perl rsync
 
-set -e
-
 # retourne la photo dans le bon sens (vertical ou horizontal) 
 # en fonction de la métadonnées exif renseignée par l'appareil photo
 jhead -autorot -c *.JPG *.jpg *.jpeg
