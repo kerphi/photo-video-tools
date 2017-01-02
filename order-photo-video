@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# Script chargé de :
+# - retourner horizontallement ou verticalement les photos
+# - renommer photos & videos par date heure et minute de prise de vue
+# - classer photos & videos dans une structure de répertoires datés
+#
+
+sudo apt-get install -y jhead libimage-exiftool-perl rsync
+
+set -e
+
+# retourne la photo dans le bon sens (vertical ou horizontal) 
+# en fonction de la métadonnées exif renseignée par l'appareil photo
+jhead -autorot -c *.JPG *.jpg *.jpeg
+
+# range les photos par répertoires datés
+exiftool '-FileName<DateTimeOriginal' -d %Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e ./*.JPG ./*.jpg ./*.jpeg
+
+# range les videos par répertoires datés
+exiftool '-FileName<MediaCreateDate'  -d %Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e ./*.MOV ./*.mp4
