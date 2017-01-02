@@ -47,7 +47,7 @@ for SRC in $(find . -iname "*.avi" ; find . -iname "*.mov" ; find . -iname "*.mp
   fi
 
   echo "Transcoding de la vidéo ${SRC} dans un fichier temporaire ${SRC_NICE_NAME}.x264"
-  DST="${SRC_NICE_NAME}.x264.mkv"
+  DST="${SRC_NICE_NAME}.x264.avi"
   #cvlc ${SRC} ":sout=#transcode{deinterlace, venc=x264{profile=baseline,level=13,crf=24}, acodec=mp3, ab=128, channels=2}:std{access=file, mux=ts, dst=${DST}}" vlc://quit 
   ffmpeg -i ${SRC} -threads 0 -map 0:0 -map 0:1 -sn -vcodec libx264 -preset slow -crf 22 -acodec aac -ac 2 -aq 4 $DST
    
