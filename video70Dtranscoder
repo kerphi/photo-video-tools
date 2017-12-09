@@ -5,11 +5,6 @@
 # Ex: une vidéo de 119M passe après transcoding en MPEG4 à 17M
 #
 
-if [ "`dpkg --get-selections | grep vlc-nox | grep install`" = "" ]; then
-  echo "Erreur : le programme vlc n'est présent"
-  echo "         sudo apt-get install vlc-nox"
-  exit
-fi
 if [ "`dpkg --get-selections | grep libimage-exiftool-perl | grep install`" = "" ]; then
   echo "Erreur : le programme exiftool n'est présent"
   echo "         sudo apt-get install libimage-exiftool-perl"
