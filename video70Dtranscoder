@@ -22,13 +22,14 @@ fi
 for SRC in $(find . -iname "*.avi" ; find . -iname "*.mov" ; find . -iname "*.mp4" ; find . -iname "*.orig"); do
 
   SRC_NICE_NAME=$(echo $SRC | sed 's#\.orig$##g')
+
   
 # todo utiliser avprobe pour mieux détecter le codec de la video ?
 # http://askubuntu.com/questions/303454/get-information-about-a-video-from-command-line-tool
 
   # passe le transcoding du .orig si la version non .orig est déjà en MPEG4
   if [ "${SRC}" != "${SRC_NICE_NAME}" ]; then
-    if [ "$(avprobe $SRC_NICE_NAME 2>&1 | grep -v "configuration:" | grep libx264)" != "" ]; then
+    if [ "$(avprobe $SRC_NICE_NAME 2>&1 | grep -v "configuration:" | grep H264)" != "" ]; then
     #if [ "$(file $SRC_NICE_NAME | grep 'ISO Media, MPEG v4 system, version 1')" != "" ]; then
       echo "Le fichier $SRC a été ignoré car il y a déjà ${SRC_NICE_NAME} encodé avec libx264"
       continue
@@ -36,7 +37,7 @@ for SRC in $(find . -iname "*.avi" ; find . -iname "*.mov" ; find . -iname "*.mp
   fi
 
   # passe le transcoding du fichier non .orig si c'est déjà du MPEG4
-  if [ "$(avprobe $SRC 2>&1 | grep -v "configuration:" | grep libx264)" != "" ]; then
+  if [ "$(avprobe $SRC 2>&1 | grep -v "configuration:" | grep H264)" != "" ]; then
     echo "Le fichier $SRC a été ignoré car son codec est déjà libx264"
     continue
   fi
