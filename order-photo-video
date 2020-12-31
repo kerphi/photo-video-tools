@@ -16,4 +16,4 @@ jhead -autorot -c *.JPG *.jpg *.jpeg
 exiftool '-FileName<DateTimeOriginal' -d %Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e ./*.JPG ./*.jpg ./*.jpeg
 
 # range les videos par répertoires datés
-exiftool '-FileName<MediaCreateDate'  -d %Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e ./*.MOV ./*.mp4
+exiftool '-FileName<MediaCreateDate'  -d %Y-%m_Famille/%Y%m%d-%Hh%M_%%f.%%e ./*.MOV ./*.mp4 ./*.MP4
